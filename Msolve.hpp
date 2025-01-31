@@ -675,7 +675,7 @@ double _Dip_cal_(std::string s)
                 double x, y, z;
                 x = _Dip_pop_2();
                 y = _Dip_pop_2();
-                z = __min(y, x);
+                z = std::min(y, x);
                 _Dip_push_2(z);
             }
             else if (tempi == "fmax")
@@ -683,7 +683,7 @@ double _Dip_cal_(std::string s)
                 double x, y, z;
                 x = _Dip_pop_2();
                 y = _Dip_pop_2();
-                z = __max(y, x);
+                z = std::max(y, x);
                 _Dip_push_2(z);
             }
             else if (tempi == "fhypot")
