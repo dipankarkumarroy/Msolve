@@ -6,7 +6,8 @@
 #ifndef MSOLVE_HPP
 #define MSOLVE_HPP
 #include <cmath>
-double Msolve(std::string s);
+double _Dip_Msolve(std::string s);
+std::string _Dip_multifunc(std::string s);
 std::string _Dip_InfTPo_(std::string s);
 class _Dip_
 {
@@ -843,7 +844,9 @@ std::string _Dip_conv_(const std::string &s, Args... args)
     return ts;
 }
 
-double Msolve(std::string s)
+
+
+double _Dip_Msolve(std::string s)
 {
     int k = 0;
     std::string ts;
@@ -860,10 +863,88 @@ double Msolve(std::string s)
 }
 
 template <typename... Args>
-double Msolve(std::string s, Args... args)
+double _Dip_Msolve(std::string s, Args... args)
 {
     s = _Dip_conv_(s, args...);
     return _Dip_cal_(" " + _Dip_InfTPo_(s));
+}
+
+std::string _Dip_multifunc(std::string s)
+{
+    std::string temp, fs;
+    temp = "";
+    fs = "";
+    int count = 0;
+    int count1 =0;
+
+    for (int i = 0; i <= s.length(); i++)
+    {
+        if (s[i] == '{' && count == 0)
+        {
+            fs = fs + temp;
+            temp = "";
+            count = 1;
+            count1 = count1+1;
+        }
+        else if (s[i] == '{' && count == 1)
+        {
+            fs = fs + '{' + temp;
+            temp = "";
+            count = 1;
+            count1 = count1+1;
+        }
+        else if (s[i] == '}' && count == 1)
+        {
+            double d = _Dip_Msolve(temp);
+            if (d < 0)
+            {
+                fs = fs + "(0" + std::to_string(d) + ")";
+            }
+            else
+            {
+                fs = fs + std::to_string(d);
+            }
+
+            temp = "";
+            count = 0;
+            count1 = count1-1;
+        }
+        else if (s[i] == '}' && count == 0)
+        {
+            fs = fs + temp + '}';
+            temp = "";
+            count = 0;
+        }
+        else
+        {
+            temp = temp + s[i];
+        }
+    }
+    
+    if(count1==0)
+    {
+        return fs;
+    }
+    else
+    {
+        return _Dip_multifunc(fs);
+    }
+    
+}
+
+template <typename... Args>
+double Msolve(std::string s, Args... args)
+{
+    s = _Dip_conv_(s, args...);
+    s = _Dip_multifunc('{'+s+'}');
+    return _Dip_Msolve(s);
+}
+
+
+double Msolve(std::string s)
+{
+    s = _Dip_multifunc('{'+s+'}');
+    return _Dip_Msolve(s);
 }
 
 #endif
